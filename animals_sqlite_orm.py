@@ -1,4 +1,5 @@
 import sqlite3
+import animals
 
 class AnimalORM:
     def __init__(self, db_name):
@@ -31,13 +32,23 @@ class AnimalORM:
                             );""")
         print(f"Added animal {animal.name}")
     
-    def get_type(self, name):
-        self.cur.execute(f"""SELECT animal_types.name
+    def get_animals(self):
+        self.cur.execute(f"""SELECT animals.name, animal_types.name
                             FROM animal_types
-                            INNER JOIN animals ON animal_types.type_id=animals.type_id
-                            WHERE animals.name='{name}';""")
-        animal_type = list(self.cur.fetchall())[0][0]
-        return animal_type
+                            INNER JOIN animals ON animal_types.type_id=animals.type_id;""")
+        animals_list = []
+        for animal_data in self.cur.fetchall():
+            this_animal = 0
+            if animal_data[1] == "duck":      # this pattern is bad but in practice we would probably not use subclasses like this
+                this_animal = animals.Duck(animal_data[0])
+            elif animal_data[1] == "snake":
+                this_animal = animals.Snake(animal_data[0])
+            elif animal_data[1] == "squid":
+                this_animal = animals.Squid(animal_data[0])
+            else:
+                this_animal = animals.Animal(animal_data[0])
+            animals_list.append(this_animal)
+        return animals_list
     
     def delete(self, animal):
         self.cur.execute(f"""DELETE FROM animals
