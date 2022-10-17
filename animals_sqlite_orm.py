@@ -34,10 +34,10 @@ class AnimalORM:
     def get_type(self, name):
         self.cur.execute(f"""SELECT animal_types.name
                             FROM animal_types
-                            INNER JOIN animals ON animal_types.name=animals.type_id
+                            INNER JOIN animals ON animal_types.type_id=animals.type_id
                             WHERE animals.name='{name}';""")
-        animal_type = list(self.cur.fetchall())
-        return str(animal_type)
+        animal_type = list(self.cur.fetchall())[0][0]
+        return animal_type
     
     def delete(self, animal):
         self.cur.execute(f"""DELETE FROM animals
@@ -45,7 +45,7 @@ class AnimalORM:
         self.cur.execute(f"""DELETE FROM animal_types
                             WHERE NOT EXISTS(
                                 SELECT animals.name FROM animals
-                                INNER JOIN animal_types ON animals.type_id=animal_types.name
+                                INNER JOIN animal_types ON animals.type_id=animal_types.type_id
                                 WHERE animal_types.name = '{animal.type}'
                             ) AND animal_types.name = '{animal.type}';""")
         print(f"Deleted animal {animal.name}")
