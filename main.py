@@ -1,6 +1,11 @@
 from animals_sqlite_orm import AnimalORM
 import animals as anm
 
+"""
+This is intended to be a demo of the capabilities of the ORM, see the 
+animals_sqlite_orm and animals py files for a full list of methods
+"""
+
 my_orm = AnimalORM("test.db")
 
 current_animals = my_orm.get_animals()
